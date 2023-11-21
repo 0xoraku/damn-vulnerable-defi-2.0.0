@@ -13,21 +13,27 @@ describe('[Challenge] Unstoppable', function () {
 
         [deployer, attacker, someUser] = await ethers.getSigners();
 
+        //DVTtoken発行
         const DamnValuableTokenFactory = await ethers.getContractFactory('DamnValuableToken', deployer);
+        //UnstoppableLenderのコントラクトを作成
         const UnstoppableLenderFactory = await ethers.getContractFactory('UnstoppableLender', deployer);
 
         this.token = await DamnValuableTokenFactory.deploy();
         this.pool = await UnstoppableLenderFactory.deploy(this.token.address);
 
+        //poolが100万tokenを使うことを許可
         await this.token.approve(this.pool.address, TOKENS_IN_POOL);
+        //deployerからpoolに100万tokenを送る
         await this.pool.depositTokens(TOKENS_IN_POOL);
-
+        //attackerに100tokenを送る
         await this.token.transfer(attacker.address, INITIAL_ATTACKER_TOKEN_BALANCE);
 
+        //poolは100万tokenを持っている
         expect(
             await this.token.balanceOf(this.pool.address)
         ).to.equal(TOKENS_IN_POOL);
 
+        //attackerは100tokenを持っている
         expect(
             await this.token.balanceOf(attacker.address)
         ).to.equal(INITIAL_ATTACKER_TOKEN_BALANCE);
