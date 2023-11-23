@@ -19,7 +19,8 @@ contract NaiveReceiverLenderPool is ReentrancyGuard {
 
     //borrowAmountは0でも可能
     // borrowerの条件がない
-    //その結果、FIXED_FEEの1 ether分Receiverからdrainできてしまう
+    //その結果、複数回呼び出すことでFIXED_FEEの1 ether分をReceiverが負担するので、
+    //Receiverからdrainできてしまう
     function flashLoan(address borrower, uint256 borrowAmount) external nonReentrant {
         uint256 balanceBefore = address(this).balance;
         require(balanceBefore >= borrowAmount, "Not enough ETH in pool");
