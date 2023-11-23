@@ -18,12 +18,14 @@ describe('[Challenge] Naive receiver', function () {
         const FlashLoanReceiverFactory = await ethers.getContractFactory('FlashLoanReceiver', deployer);
 
         this.pool = await LenderPoolFactory.deploy();
+        //pool(naiveLenderPool)に1000ETHを送金
         await deployer.sendTransaction({ to: this.pool.address, value: ETHER_IN_POOL });
 
         expect(await ethers.provider.getBalance(this.pool.address)).to.be.equal(ETHER_IN_POOL);
         expect(await this.pool.fixedFee()).to.be.equal(ethers.utils.parseEther('1'));
 
         this.receiver = await FlashLoanReceiverFactory.deploy(this.pool.address);
+        //receiver(flashloan)に10ETHを送金
         await deployer.sendTransaction({ to: this.receiver.address, value: ETHER_IN_RECEIVER });
 
         expect(await ethers.provider.getBalance(this.receiver.address)).to.be.equal(ETHER_IN_RECEIVER);
