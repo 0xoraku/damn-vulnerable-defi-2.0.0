@@ -16,6 +16,7 @@ describe('[Challenge] Truster', function () {
         this.token = await DamnValuableToken.deploy();
         this.pool = await TrusterLenderPool.deploy(this.token.address);
 
+        //100万DVTをLenderpoolに送金
         await this.token.transfer(this.pool.address, TOKENS_IN_POOL);
 
         expect(
