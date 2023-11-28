@@ -9,11 +9,10 @@ import "../DamnValuableToken.sol";
 /**
  * @title FlashLoanerPool
  * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
-
+ * 
  * @dev A simple pool to get flash loans of DVT
  */
 contract FlashLoanerPool is ReentrancyGuard {
-
     using Address for address;
 
     DamnValuableToken public immutable liquidityToken;
@@ -27,11 +26,12 @@ contract FlashLoanerPool is ReentrancyGuard {
         require(amount <= balanceBefore, "Not enough token balance");
 
         require(msg.sender.isContract(), "Borrower must be a deployed contract");
-        
+
         liquidityToken.transfer(msg.sender, amount);
 
         msg.sender.functionCall(
             abi.encodeWithSignature(
+                //ここなんか怪しい。
                 "receiveFlashLoan(uint256)",
                 amount
             )

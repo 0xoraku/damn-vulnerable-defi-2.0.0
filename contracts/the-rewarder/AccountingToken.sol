@@ -12,7 +12,6 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
  *         with snapshotting capabilities
  */
 contract AccountingToken is ERC20Snapshot, AccessControl {
-
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant SNAPSHOT_ROLE = keccak256("SNAPSHOT_ROLE");
     bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
@@ -34,6 +33,13 @@ contract AccountingToken is ERC20Snapshot, AccessControl {
         _burn(from, amount);
     }
 
+    /**
+     * _snapshot関数は、特定の時点での全アカウントのバランスのスナップショットを作成します。
+     * あるIDのスナップショットを参照することで、
+     * そのIDが作成された時点での全アカウントのバランスを確認することが可能です。
+     * これにより、特定の時点でのmint者一覧やその他の情報を取得することができます。
+     * 現在のsnapshotのid(getCurrentSnapshotId)を返す。
+     */
     function snapshot() external returns (uint256) {
         require(hasRole(SNAPSHOT_ROLE, msg.sender), "Forbidden");
         return _snapshot();

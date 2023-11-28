@@ -10,8 +10,9 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
  * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
  * @dev A mintable ERC20 with 2 decimals to issue rewards
  */
+//msg.sender(deployer)にreward tokenをmintできる役割を付与し、
+//特定のアドレス(to)にmintする。
 contract RewardToken is ERC20, AccessControl {
-
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     constructor() ERC20("Reward Token", "RWT") {
