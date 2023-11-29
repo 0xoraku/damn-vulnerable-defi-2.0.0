@@ -45,6 +45,8 @@ contract TheRewarderPool {
     /**
      * @notice sender must have approved `amountToDeposit` liquidity tokens in advance
      */
+    //msg.senderにaccTokenをmintさせ、更にrewardTokenを配る？
+    //その後DVTokenをmsg.senderからこのコントラクトにdepositさせる
     function deposit(uint256 amountToDeposit) external {
         require(amountToDeposit > 0, "Must deposit tokens");
 
@@ -55,25 +57,32 @@ contract TheRewarderPool {
     }
 
     function withdraw(uint256 amountToWithdraw) external {
+        //msg.senderのaccTokenをburn
         accToken.burn(msg.sender, amountToWithdraw);
+        //msg.senderがDVTokenを出金
         require(liquidityToken.transfer(msg.sender, amountToWithdraw));
     }
 
     function distributeRewards() public returns (uint256) {
         uint256 rewards = 0;
 
+        //新しいラウンドが始まったら、スナップショットを記録する
         if (isNewRewardsRound()) {
             _recordSnapshot();
         }
 
+        //最新のスナップショットの時点での全供給者の合計供給量を取得
         uint256 totalDeposits = accToken.totalSupplyAt(lastSnapshotIdForRewards);
+        //最新のスナップショットの時点でのmsg.senderのbalanceを取得
         uint256 amountDeposited = accToken.balanceOfAt(msg.sender, lastSnapshotIdForRewards);
 
         if (amountDeposited > 0 && totalDeposits > 0) {
+            //報酬金額を計算
             rewards = (amountDeposited * 100 * 10 ** 18) / totalDeposits;
-
+            // msg.senderに報酬を配布
             if (rewards > 0 && !_hasRetrievedReward(msg.sender)) {
                 rewardToken.mint(msg.sender, rewards);
+                //報酬を配布した時刻を記録
                 lastRewardTimestamps[msg.sender] = block.timestamp;
             }
         }
@@ -82,11 +91,13 @@ contract TheRewarderPool {
     }
 
     function _recordSnapshot() private {
+        //現在のスナップショットのidを取得
         lastSnapshotIdForRewards = accToken.snapshot();
         lastRecordedSnapshotTimestamp = block.timestamp;
         roundNumber++;
     }
 
+    //報酬該当者且つ報酬期間かどうかを判定
     function _hasRetrievedReward(address account) private view returns (bool) {
         return (
             lastRewardTimestamps[account] >= lastRecordedSnapshotTimestamp
