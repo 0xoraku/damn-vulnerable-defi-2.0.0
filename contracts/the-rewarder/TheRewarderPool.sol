@@ -33,6 +33,11 @@ contract TheRewarderPool {
     // Track number of rounds
     uint256 public roundNumber;
 
+    /*
+    liquidityToken:ユーザーがdepositするためのtoken
+    accToken:スナップショットを取るためのtoken
+    rewardToken:報酬を配布するためのtoken
+     */
     constructor(address tokenAddress) {
         // Assuming all three tokens have 18 decimals
         liquidityToken = DamnValuableToken(tokenAddress);
@@ -45,7 +50,7 @@ contract TheRewarderPool {
     /**
      * @notice sender must have approved `amountToDeposit` liquidity tokens in advance
      */
-    //msg.senderにaccTokenをmintさせ、更にrewardTokenを配る？
+    //msg.senderにaccTokenをmintさせ(snapshot用)、更にrewardTokenを配る
     //その後DVTokenをmsg.senderからこのコントラクトにdepositさせる
     function deposit(uint256 amountToDeposit) external {
         require(amountToDeposit > 0, "Must deposit tokens");
